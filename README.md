@@ -17,6 +17,9 @@ as most LDP-based systems. It is based on decentralized OAuth2/OpenID Connect.
 * [Brief Workflow Summary](#brief-workflow-summary)
 * [Deriving WebID URI from ID Token](#deriving-webid-uri-from-id-token)
 * [WebID Provider Confirmation](#webid-provider-confirmation)
+* [Authorized OIDC Issuer Discovery](#authorized-oidc-issuer-discovery)
+    - [Issuer Discovery From Link Header](#issuer-discovery-from-link-header)
+    - [Issuer Discovery From WebID Profile](#issuer-discovery-from-webid-profile)
 * [Detailed Sign In Workflow Example](#detailed-sign-in-workflow-example)
 * [Decentralized Authentication Glossary](#decentralized-authentication-glossary)
 
@@ -92,6 +95,9 @@ WebID-OIDC makes the following changes to the base OpenID Connect protocol
   Confirmation](#webid-provider-confirmation).
   After the WebID URI is extracted, the recipient of the ID Token must confirm
   that the Provider was indeed authorized by the holder of the WebID profile.
+* Specifies the [Authorized OIDC Issuer
+  Discovery](#authorized-oidc-issuer-discovery) process (used as part of
+  Provider Confirmation, and during Provider Selection steps).
 
 It's also worth mentioning that while traditional OpenID Connect use cases are
 concerned with retrieving user-related claims from [UserInfo
@@ -131,10 +137,9 @@ For example, here is what happens when Alice tries to request the resource
    extracts Alice's WebID URI from inside  it. She is now signed in to
    `bob.com` as user `https://alice.solidtest.space/#i`.
 7. [WebID Provider Confirmation](#webid-provider-confirmation):
-   `bob.com` makes an HTTP request to Alice's WebID URI,
-   `https://alice.solidtest.space/` and *confirms* (via parsing the
-    `oidc.provider` link relation header) that `solidtest.space` is indeed
-    Alice's Provider of choice.
+   `bob.com` confirms that `solidtest.space` is indeed Alice's authorized OIDC
+   provider (by matching the provider URI from the `iss` claim with Alice's
+   WebID).
 
 There is a lot of heavy lifting happening under the hood, performed by `bob.com`
 and `alice.solidtest.space`, the two servers involved in this exchange. They
@@ -213,23 +218,86 @@ owner of the WebID?
 
 #### The Solution
 
-At the end of the WebID-OIDC workflow, a recipient (Relying Party) of the ID
-Token MUST confirm that the Identity Provider (the value in the `iss`uer claim)
-is authorized by the holder of the WebID, by doing the following:
+When presented with WebID-OIDC credentials in the form of bearer tokens,
+the Resource Server MUST confirm that the Identity Provider (the value in the
+`iss`uer claim) is authorized by the holder of the WebID, by doing the
+following:
 
-1. Dereference (make an HTTP GET request to) the WebID URI.
-2. Find the preferred/authorized *provider URI* for that WebID URI by:
-    * First, check the `Link:` header for `oidc.provider` link relations. If
-      present, use the value of that link relation as the authorized Provider
-      URI.
-    * If the `oidc.provider` link relation header is not present, attempt to
-      parse the body of the WebID Profile, and parse the preferred/authorized
-      Provider URI from it. (TODO: determine which RDF predicate to use.)
-3. If the Provider URI is not present (either in the header or the body of the
-   [WebID
-   Profile](https://github.com/solid/solid-spec#webid-profile-documents), the Relying Party MUST reject the sign in attempt.
-4. If the Provider URI is present, it MUST match the Issuer URI in the ID
-   Token (the `iss` claim), and reject the sign in attempt if not matching.
+1. (Common case) If the server that issued the ID Token is the same entity that
+  hosts the WebID profile, then it is considered the authorized OIDC provider
+  for that WebID (short-circuiting the Provider Confirmation process), and no
+  further steps need to be taken. Specifically, one of the following must be
+  true:
+    - The [origin](https://developer.mozilla.org/en-US/docs/Web/API/URL/origin)
+      of the WebID URI is the same as the origin of the URI in the
+      `iss`uer claim. (For example, `iss: 'https://example.com'` and the
+      WebID URI is `https://example.com/profile#me`).
+    - The WebID URI is a *subdomain* of the issuer of the ID Token.
+      For example, `iss: 'https://example.com'` and the WebID URI is
+      `https://alice.example.com/profile#me`.
+   If neither of the above is the case (and the WebID is hosted on a security
+   realm different than that of its OIDC provider), further steps need to be
+   taken for confirmation.
+2. Determine the **authorized OIDC provider** URI for that WebID, by performing
+   [Authorized OIDC Issuer Discovery](#authorized-oidc-issuer-discovery).
+3. If the Provider URI is not discoverable (either from the header or the body
+   of the [WebID
+   Profile](https://github.com/solid/solid-spec#webid-profile-documents), the Resource Server MUST reject the credentials or authentication attempt.
+4. If the Provider URI is discovered, it MUST match the Issuer URI in the ID
+   Token (the `iss` claim), reject the credentials otherwise.
+
+## Authorized OIDC Issuer Discovery
+
+During the Provider Selection or [Provider
+Confirmation](#webid-provider-confirmation) steps it is necessary to discover,
+for a given WebID, the URI of the authorized OIDC provider for that WebID.
+
+1. First, attempt to [discover from link
+   headers](#issuer-discovery-from-link-header)
+2. If not found, proceed to [discover from the WebID
+   Profile]((#issuer-discovery-from-webid-profile))
+
+Note that this procedure is different from the classic [OpenID Provider Issuer
+Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html#IssuerDiscovery)
+process, since that spec is concerned with discovering the issuer URI *from a
+user's email address*, using the WebFinger protocol. Whereas this spec needs to
+derive the issuer URI from a WebID URI (which is often hosted on a different
+domain than the issuer).
+
+#### Issuer Discovery From Link Header
+
+To discover the authorized OIDC Issuer for a given WebID from Link rel headers:
+
+1. Make an HTTP OPTION request to the WebID URI.
+2. Parse the `Link:` header, and check for the value of the
+  `http://openid.net/specs/connect/1.0/issuer` link relation. If
+  present, use the value of that link relation as the authorized Provider
+  URI. For example: `Link: <https://provider.example.com>; rel="http://openid.net/specs/connect/1.0/issuer"` means that `https://provider.example.com` is the authorized OIDC provider for that URI.
+3. If the Link header is not present (or does not contain the relevant link
+   relation), proceed to discovering the issuer from the WebID profile contents.
+
+#### Issuer Discovery From WebID Profile
+
+To discover the authorized OIDC Issuer for a given WebID from the WebID Profile
+contents (this requires Turtle/RDF parsing capability):
+
+1. Dereference the WebID URI (make an HTTP GET request) and fetch the contents
+  of the WebID Profile (typically in Turtle or JSON-LD format or some other RDF
+  serialization).
+2. Parse the RDF, and query for the object of the statement containing the
+  `<http://www.w3.org/ns/solid/terms#oidcIssuer>` predicate.
+
+For example, if Alice (with the WebID of `https://alice.example.com/profile#me`)
+wanted to specify `https://provider.com` as the authorized OIDC provider for
+that profile, she would add the following triple to her profile:
+
+```ttl
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+
+# ...
+
+<#me> solid:oidcIssuer <https://provider.com> .
+```
 
 ## Detailed Sign In Workflow Example
 
