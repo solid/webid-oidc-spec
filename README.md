@@ -255,7 +255,7 @@ for a given WebID, the URI of the authorized OIDC provider for that WebID.
 1. First, attempt to [discover from link
    headers](#issuer-discovery-from-link-header)
 2. If not found, proceed to [discover from the WebID
-   Profile]((#issuer-discovery-from-webid-profile))
+   Profile](#issuer-discovery-from-webid-profile)
 
 Note that this procedure is different from the classic [OpenID Provider Issuer
 Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html#IssuerDiscovery)
