@@ -120,7 +120,7 @@ For example, here is what happens when Alice tries to request the resource
    example, `alice.solidtest.space`), or entering her email.
 3. [Local
    Authentication](example-workflow.md#3-local-authentication-to-provider):
-   Alice gets redirected towards her service provider's own Sign In page,
+   Alice gets redirected towards her service provider's own Sign In page, thus requesting
    `https://alice.solidtest.space/signin`, and authenticates using her preferred
    method (password, WebID-TLS certificate, FIDO 2 /
    [WebAuthn](https://w3c.github.io/webauthn/) device, etc).
@@ -130,8 +130,8 @@ For example, here is what happens when Alice tries to request the resource
 5. [Authentication Response](example-workflow.md#5-authentication-response):
    She then gets redirected back towards `https://bob.com/resource1` (the
    resource she was originally trying to request). The server, `bob.com`, also
-   receives a signed ID Token from `alice.solidtest.space`, attesting that she
-   has signed in.
+   receives a signed ID Token from `alice.solidtest.space` that was returned
+   with the response in point 3, attesting that she has signed in.
 6. [Deriving a WebID URI](#deriving-webid-uri-from-id-token):
    `bob.com` (the server controlling the resource) validates the ID Token, and
    extracts Alice's WebID URI from inside  it. She is now signed in to
