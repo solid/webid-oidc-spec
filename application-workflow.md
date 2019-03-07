@@ -24,7 +24,8 @@ In this example, Alice is already logged into her identity provider (e.g. via so
 ```
   { access_token: “98qwerkjhqwerjhkwq”, token_type: “Bearer” }.
 ```
-  The response nay also include additional details like scope / expiration time, or also a refresh token if available. The refresh token would allow DecentPhotos to continue to renew the bearer token without Alice having to intervene until the expire time associated with the Refresh token (which is typically set for weeks or months vs. a bearer which should be shorter lived (hours)).
+  - The response may also include additional details like scope / expiration time, or a refresh token if available. The refresh token would allow DecentPhotos to continue to renew the bearer token without Alice having to intervene until the expire time associated with the Refresh token is passed. A refresh token's expire time is typically set for weeks or months, as opposed to the expire time on a bearer which should be much shorter lived (typically minutes or hours).
+
 10. DecentPhotos (RP) stores this token and is able to use it for requests to Alice.com (RS)
 11. That night, while Alice is asleep, DecentPhotos (RP) is going to connect to Alice.com (RS) and organize some photos
 12. DecentPhotos (RP) sends a request to the Alice.com (RS) for `https://alice.com/pics/private`, including the bearer token
