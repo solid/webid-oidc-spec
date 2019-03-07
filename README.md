@@ -21,6 +21,7 @@ as most LDP-based systems. It is based on decentralized OAuth2/OpenID Connect.
     - [Issuer Discovery From Link Header](#issuer-discovery-from-link-header)
     - [Issuer Discovery From WebID Profile](#issuer-discovery-from-webid-profile)
 * [Detailed Sign In Workflow Example](#detailed-sign-in-workflow-example)
+* [Detailed Application Workflow Example](#detailed-application-workflow-example)
 * [Decentralized Authentication Glossary](#decentralized-authentication-glossary)
 
 ## Introduction
@@ -303,6 +304,12 @@ that profile, she would add the following triple to her profile:
 
 To walk through a more detailed example for WebID-OIDC login, refer to the
 [Example WebID-OIDC Workflow](example-workflow.md) doc.
+
+## Detailed Application Workflow Example
+
+For a detailed example of how an application/agent can access resources in a
+pod on behalf of a given user, refer to the
+[Example Application OIDC Workflow](application-workflow.md).
 
 ## Decentralized Authentication Glossary
 
