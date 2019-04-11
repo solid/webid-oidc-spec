@@ -111,10 +111,10 @@ documents.
 
 The overall sign in workflow used by the WebID-OIDC protocol is as follows.
 For example, here is what happens when Alice tries to request the resource
-`https://bob.com/resource1`.
+`https://bob.example/resource1`.
 
 1. [Initial Request](example-workflow.md#1-initial-request): Alice
-   (unauthenticated) makes a request to `bob.com`, receives an HTTP `401
+   (unauthenticated) makes a request to `bob.example`, receives an HTTP `401
    Unauthorized` response, and is presented with a 'Sign In With...' screen.
 2. [Provider Selection](example-workflow.md#21-provider-selection): She selects
    her WebID service provider by clicking on a logo, typing in a URI (for
@@ -127,22 +127,22 @@ For example, here is what happens when Alice tries to request the resource
    [WebAuthn](https://w3c.github.io/webauthn/) device, etc).
 4. [User Consent](example-workflow.md#4-user-consent): (Optional) She'd also be
    presented with a user consent screen, along the lines of "Do you wish to
-   sign in to `bob.com`?".
+   sign in to `bob.example`?".
 5. [Authentication Response](example-workflow.md#5-authentication-response):
-   She then gets redirected back towards `https://bob.com/resource1` (the
-   resource she was originally trying to request). The server, `bob.com`, also
+   She then gets redirected back towards `https://bob.example/resource1` (the
+   resource she was originally trying to request). The server, `bob.example`, also
    receives a signed ID Token from `alice.solidtest.space` that was returned
    with the response in point 3, attesting that she has signed in.
 6. [Deriving a WebID URI](#deriving-webid-uri-from-id-token):
-   `bob.com` (the server controlling the resource) validates the ID Token, and
+   `bob.example` (the server controlling the resource) validates the ID Token, and
    extracts Alice's WebID URI from inside  it. She is now signed in to
-   `bob.com` as user `https://alice.solidtest.space/#i`.
+   `bob.example` as user `https://alice.solidtest.space/#i`.
 7. [WebID Provider Confirmation](#webid-provider-confirmation):
-   `bob.com` confirms that `solidtest.space` is indeed Alice's authorized OIDC
+   `bob.example` confirms that `solidtest.space` is indeed Alice's authorized OIDC
    provider (by matching the provider URI from the `iss` claim with Alice's
    WebID).
 
-There is a lot of heavy lifting happening under the hood, performed by `bob.com`
+There is a lot of heavy lifting happening under the hood, performed by `bob.example`
 and `alice.solidtest.space`, the two servers involved in this exchange. They
 establish a trust relationship with each other (via
 [Discovery](example-workflow.md#22-provider-discovery), and [Dynamic
@@ -204,16 +204,16 @@ an additional step and *confirm* that the holder of that WebID has authorized
 a given Provider to use that WebID. Otherwise, the following situation can
 happen:
 
-1. Alice logs in to `bob.com` with her identity Provider of choice, `alice.com`.
-   The ID Token from `alice.com` claims Alice's WebID is
-   `https://alice.com/#i`. So far so good.
-2. An attacker also logs in to `bob.com`, using `evilbox.com` as an identity
+1. Alice logs in to `bob.example` with her identity Provider of choice, `alice.example`.
+   The ID Token from `alice.example` claims Alice's WebID is
+   `https://alice.example/#i`. So far so good.
+2. An attacker also logs in to `bob.example`, using `evilbox.com` as an identity
    Provider. And because they happen to control that server, they can put
    anything they want in the `webid` claim of any ID Token coming out of that
-   server. So they *also* claim that their `webid` is `https://alice.com/#i`.
+   server. So they *also* claim that their `webid` is `https://alice.example/#i`.
 
 Without an additional confirmation step, how can a recipient of an ID Token
-(here, `bob.com`) know which of those login attempts is correct? To put it
+(here, `bob.example`) know which of those login attempts is correct? To put it
 another way, how can a recipient know which Provider is *approved* by the
 owner of the WebID?
 
@@ -332,11 +332,11 @@ An OpenID Connect Identity `Provider` (called `OP` in most OIDC specs). Also
 sometimes referred to as `Issuer`. This can be either a POD (see below) or an
 external OIDC provider such as
 [Google](https://developers.google.com/identity/protocols/OpenIDConnect). In
-the spec, Alice's POD, `alice.com`, will mostly play the role of a Provider.
+the spec, Alice's POD, `alice.example`, will mostly play the role of a Provider.
 
 ##### Resource Server (RS)
 A server hosting resources that the user wants to access, such as HTML, images,
-Linked Data / RDF sources, and so on. In the spec, `bob.com` will be used as
+Linked Data / RDF sources, and so on. In the spec, `bob.example` will be used as
 the `Resource Server` (that is, Alice will be requesting resources on Bob's
 server). *Note:* In the traditional federated social sign on context, a
 provider (such as Facebook) serves as *both* an Identity Provider *and* a
@@ -345,12 +345,12 @@ Resource Server.
 ##### Relying Party (RP)
 A `Relying Party` is a POD or a client app that has to *rely* on an ID Token
 that's issued by a Provider. In the spec, when Alice tries to access a resource
-on `bob.com`, Bob's POD acts as the Relying Party, in that interaction.
-And correspondingly, Alice's POD, `alice.com`, will serve as the Identity
+on `bob.example`, Bob's POD acts as the Relying Party, in that interaction.
+And correspondingly, Alice's POD, `alice.example`, will serve as the Identity
 Provider, again for that interaction.
 
 Incidentally, when Alice tries to access a resource on her *own* POD,
-`alice.com` plays all of the roles -- it's both the Provider and a Relying
+`alice.example` plays all of the roles -- it's both the Provider and a Relying
 Party (as well as the Resource Server).
 
 ##### POD
@@ -360,7 +360,7 @@ also hosts the user's WebID Profile, and implements the API endpoints that allow
 it to act as a WebID-OIDC Identity Provider (OP). Lastly, when users requests
 resources from it, the POD also acts as a Relying Party (a recipient of those
 users' ID Tokens).
-In this spec, `alice.com` and `bob.com` are both PODs.
+In this spec, `alice.example` and `bob.example` are both PODs.
 
 ##### Home POD vs Other POD
 A user's Home POD is one that hosts their WebID Profile, and also acts as that
@@ -369,8 +369,8 @@ some other WebID-OIDC compliant POD, acting as a Resource Server and Relying
 Party, that a user is trying to access using the WebID URI and Profile of their
 Home POD.
 
-When Alice tries to access a resource on Bob's POD, `alice.com` is her Home
-POD, and `bob.com` plays the role of the Other POD.
+When Alice tries to access a resource on Bob's POD, `alice.example` is her Home
+POD, and `bob.example` plays the role of the Other POD.
 
 ##### Public Client vs Confidential Client
 Public - in-browser, mobile or desktop app, cannot be trusted with securely
@@ -380,7 +380,7 @@ Confidential - server-side app, can be trusted with secrets.
 ##### Presenter
 A public client app that is trying to *present* a user's credentials from their
 home POD to some other POD. For example, Bob is trying to access, via a client
-app, a shared file on Alice's `alice.com` POD, logging in using his own
-`bob.com` POD/provider. In this example, `bob.com` is a Provider, `alice.com` is
+app, a shared file on Alice's `alice.example` POD, logging in using his own
+`bob.example` POD/provider. In this example, `bob.example` is a Provider, `alice.example` is
 a Relying Party, and the client app (say, a browser-based HTML editor) is a
 Presenter.
