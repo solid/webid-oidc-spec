@@ -81,7 +81,9 @@ Relying Party (`bob.com`) have interacted, `bob.com` must dynamically register
 itself *as a client/relying party* to `alice.com`. Bob's POD (in the RP role)
 performs dynamic registration with Alice's POD (in the Provider role), and as
 a result `bob.com` receives its very own `client_id` which identifies it
-uniquely as a Relying Party to `alice.com`.
+uniquely as a Relying Party to `alice.com`. The `client_id` MUST be the hostname
+of the client's `Origin` header (`bob.com`). This will be used later to validate
+redirects.
 
 If this is the first time a Provider and a Relying Party are encountering each
 other, the RP must perform
@@ -122,10 +124,10 @@ verification.
 
 *Example 1:* `alice.com`, in the Provider role, verifies the Relying Party
 (`bob.com`) that initiated the authentication process, and redirects Alice's
-browser to a pre-registered `redirect_uri` that `bob.com` provided during
-the previous Dynamic Registration step. So, Alice's browser gets redirected
-to `https://bob.com/auth-callback` (which is the URI Bob's POD uses as an OIDC
-`redirect_uri` endpoint).
+browser to a provided `redirect_uri` that `bob.com`. The `redirect_uri` MUST
+have the same host as the application's `client_id`. So, Alice's browser gets
+redirected to `https://bob.com/auth-callback` (which is the URI Bob's POD uses
+as an OIDC `redirect_uri` endpoint).
 
 (**Optimization**) The Relying Party may choose to establish a user session
 (via a browser cookie), so that the user can skip Steps 1-5 in subsequent
