@@ -80,15 +80,10 @@ of the OIDC Discovery spec, for more information.
 Relying Party (`bob.example`) have interacted, `bob.example` must dynamically register
 itself *as a client/relying party* to `alice.example`. Bob's POD (in the RP role)
 performs dynamic registration with Alice's POD (in the Provider role), and as
-<<<<<<< HEAD
-a result `bob.com` receives its very own `client_id` which identifies it
-uniquely as a Relying Party to `alice.com`. The `client_id` MUST be the hostname
-of the client's `Origin` header (`bob.com`). This will be used later to validate
-redirects.
-=======
 a result `bob.example` receives its very own `client_id` which identifies it
-uniquely as a Relying Party to `alice.example`.
->>>>>>> 5aba753664c22a78ce7e05514d717101d616f49e
+uniquely as a Relying Party to `alice.example`. The `client_id` MUST be the hostname
+of the client's `Origin` header (`bob.example`). This will be used later to validate
+redirects.
 
 If this is the first time a Provider and a Relying Party are encountering each
 other, the RP must perform
