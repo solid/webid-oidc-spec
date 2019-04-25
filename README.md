@@ -267,6 +267,10 @@ domain than the issuer).
 
 #### Issuer Discovery From Link Header
 
+**Note: this feature is at risk of being removed.
+Please [join the discussion](https://github.com/solid/webid-oidc-spec/issues/18).
+Code depending on this will still work for now.**
+
 To discover the authorized OIDC Issuer for a given WebID from Link rel headers:
 
 1. Make an HTTP OPTION request to the WebID URI.
