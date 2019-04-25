@@ -124,7 +124,7 @@ verification.
 
 *Example 1:* `alice.example`, in the Provider role, verifies the Relying Party
 (`bob.example`) that initiated the authentication process, and redirects Alice's
-browser to a provided `redirect_uri` that `bob.example`. The `redirect_uri` MUST
+browser to a `redirect_uri` provided by `bob.example`. The `redirect_uri` MUST
 have the same host as the application's `client_id`. So, Alice's browser gets
 redirected to `https://bob.example/auth-callback` (which is the URI Bob's POD uses
 as an OIDC `redirect_uri` endpoint).
