@@ -306,13 +306,13 @@ that profile, she would add the following triple to her profile:
 <#me> solid:oidcIssuer <https://provider.com> .
 ```
 
-## Securing tokens for multiple resource providers
+## Securing tokens for multiple resource servers
 
 #### The Problem
 
-Unlike standard implementations of OIDC, WebID-OIDC must deal with a number of RPs many of which the OP will not know about. OIDC defines the `aud` claim which defines the RPs for which a token can be used.
+Unlike standard implementations of OIDC, WebID-OIDC must deal with a number of RSs many of which the OP will not know about. OIDC defines the `aud` claim which defines the RSs for which a token can be used.
 
-However, given Solid's use case, a token should be usable for any RP so the user may federate a query across multiple Pods, so the `aud`ience cannot be constrained. Yet, an unconstrained `aud`ience opens up the possibility of token stealing. In this case, a user sends a request to `evilPod.example`. The Pod returns the requested information, but now has the user's token and may pretend to be the user on any other Pod in the world.
+However, given Solid's use case, a token should be usable for any RS so the user may federate a query across multiple Pods, so the `aud`ience cannot be constrained. Yet, an unconstrained `aud`ience opens up the possibility of token stealing. In this case, a user sends a request to `evilPod.example`. The Pod returns the requested information, but now has the user's token and may pretend to be the user on any other Pod in the world.
 
 #### The Solution
 
@@ -321,8 +321,8 @@ The solution employs [Proof of Possession (PoP) tokens](https://tools.ietf.org/h
  1. A client application generates a short-lived public and private key.
  2. The client generates a request `JWT` just as it would under normal OIDC with the addition of a `key` field containing the public key.
  3. Authentication proceeds normally and yields a signed `id_token` where the `aud`ience is the client application (represented by the `origin` of the provided `redirect_uri`) and an additional field `cnf` is provided containing the client's public key.
- 4. Before sending requests to any RPs, the client generates a new signed JWT PoP token containing the RP's uri as the `aud`ience and an `id_token` feild containing the `id_token` provided by the OP.
- 5. When an RP receives the PoP token, it MUST reject any tokens containing a mismatched audience or a signature that is not associated with the public key in the `cnf` claim.
+ 4. Before sending requests to any RSs, the client generates a new signed JWT PoP token containing the RS's uri as the `aud`ience and an `id_token` feild containing the `id_token` provided by the OP.
+ 5. When an RS receives the PoP token, it MUST reject any tokens containing a mismatched audience or a signature that is not associated with the public key in the `cnf` claim.
 
 ## Detailed Sign In Workflow Example
 
