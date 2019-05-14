@@ -110,7 +110,7 @@ browser cookie), so that the user can skip Step 3 in subsequent interactions
 (until the session expires or the user signs out).
 
 ### 4. User Consent
-User consent screen ("Do you want to sign in to www.example.com?" etc).
+User consent screen ("Do you want to give www.example.com access to your Pod?" etc).
 
 *Example 1:* `alice.example`, in the Provider role, presents Alice with a User
 Consent screen that says something like "Do you want to sign in to bob.example?",
