@@ -43,7 +43,7 @@ See also: [Motivation for WebID-OIDC](motivation.md).
 ### Benefits and Capabilities
 
 * Fully decentralized cross-domain authentication (any peer node can serve as
-  an identity provider as well as a relying party to any other node)
+  an identity provider as well as a relying party to any other node) made possible by [PoP Tokens](https://tools.ietf.org/html/rfc7800).
 * Builds on decades of real-world authentication industry experience
 * Incorporates lessons from, and fixes to threat models of: SAML, OpenID and
   OpenID 2, OAuth and OAuth 2. See, for example, [RFC 6819 - OAuth 2.0 Threat
@@ -99,6 +99,8 @@ WebID-OIDC makes the following changes to the base OpenID Connect protocol
 * Specifies the [Authorized OIDC Issuer
   Discovery](#authorized-oidc-issuer-discovery) process (used as part of
   Provider Confirmation, and during Provider Selection steps).
+* Utilizes [PoP tokens](https://tools.ietf.org/html/rfc7800) to securely
+  query a wide array of resource providers.
 
 It's also worth mentioning that while traditional OpenID Connect use cases are
 concerned with retrieving user-related claims from [UserInfo
@@ -303,6 +305,24 @@ that profile, she would add the following triple to her profile:
 
 <#me> solid:oidcIssuer <https://provider.com> .
 ```
+
+## Securing tokens for multiple resource providers
+
+#### The Problem
+
+Unlike standard implementations of OIDC, WebID-OIDC must deal with a number of RPs many of which the OP will not know about. OIDC defines the `aud` claim which defines the RPs for which a token can be used.
+
+However, given Solid's use case, a token should be usable for any RP so the user may federate a query across multiple Pods, so the `aud`ience cannot be constrained. Yet, an unconstrained `aud`ience opens up the possibility of token stealing. In this case, a user sends a request to `evilPod.example`. The Pod returns the requested information, but now has the user's token and may pretend to be the user on any other Pod in the world.
+
+#### The Solution
+
+The solution employs [Proof of Possession (PoP) tokens](https://tools.ietf.org/html/rfc7800) changing the way the Bearer token is constructed:
+
+ 1. A client application generates a public and private key.
+ 2. The client generates a request `JWT` just as it would under normal OIDC with the addition of a `key` field containing the public key.
+ 3. Authentication proceeds normally and yeilds a signed `id_token` where the `aud`ience is the client application (represented by the `origin` of the provided `redirect_uri`) and an additional field `cnf` is provided containing the client's public key.
+ 4. Before sending requests to any RPs, the client generates a new signed JWT PoP token containing the RP's uri as the `aud`ience and an `id_token` feild containing the `id_token` provided by the OP.
+ 5. When an RP receives the PoP token, it MUST reject any tokens containing a mismatched audience or a signature that is not associated with the public key in the `cnf` claim.
 
 ## Detailed Sign In Workflow Example
 
