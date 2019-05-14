@@ -99,8 +99,8 @@ WebID-OIDC makes the following changes to the base OpenID Connect protocol
 * Specifies the [Authorized OIDC Issuer
   Discovery](#authorized-oidc-issuer-discovery) process (used as part of
   Provider Confirmation, and during Provider Selection steps).
-* Utilizes [PoP tokens](https://tools.ietf.org/html/rfc7800) to securely
-  query a wide array of resource providers.
+* Utilizes [PoP tokens](https://tools.ietf.org/html/rfc7800) as a means to
+  access a wide array of resource providers.
 
 It's also worth mentioning that while traditional OpenID Connect use cases are
 concerned with retrieving user-related claims from [UserInfo
@@ -314,9 +314,9 @@ However, given Solid's use case, a token should be usable for any RP so the user
 
 The solution employs [Proof of Possession (PoP) tokens](https://tools.ietf.org/html/rfc7800) changing the way the Bearer token is constructed:
 
- 1. A client application generates a public and private key.
+ 1. A client application generates a short-lived public and private key.
  2. The client generates a request `JWT` just as it would under normal OIDC with the addition of a `key` field containing the public key.
- 3. Authentication proceeds normally and yeilds a signed `id_token` where the `aud`ience is the client application (represented by the `origin` of the provided `redirect_uri`) and an additional field `cnf` is provided containing the client's public key.
+ 3. Authentication proceeds normally and yields a signed `id_token` where the `aud`ience is the client application (represented by the `origin` of the provided `redirect_uri`) and an additional field `cnf` is provided containing the client's public key.
  4. Before sending requests to any RPs, the client generates a new signed JWT PoP token containing the RP's uri as the `aud`ience and an `id_token` feild containing the `id_token` provided by the OP.
  5. When an RP receives the PoP token, it MUST reject any tokens containing a mismatched audience or a signature that is not associated with the public key in the `cnf` claim.
 
