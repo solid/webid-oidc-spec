@@ -28,10 +28,7 @@ as most LDP-based systems. It is based on decentralized OAuth2/OpenID Connect.
 
 The end result of any WebID-based authentication workflow is a verified WebID
 URI (specifically, the recipient verifies that the agent controls that URI).
-For example,
-[WebID-TLS](https://github.com/solid/solid-spec/blob/master/authn-webid-tls.md)
-derives the WebID URI from a TLS certificate, and verifies the certificate
-against the public key in an agent's WebID Profile. Similarly, the end result of
+For example, the end result of
 [OpenID Connect (OIDC)](https://openid.net/specs/openid-connect-core-1_0.html)
 workflows is a verified ID Token. The WebID-OIDC protocol specifies a mechanism
 for getting a WebID URI from an OIDC ID Token, and gains the benefits of both

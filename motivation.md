@@ -1,9 +1,7 @@
 ## Motivation for WebID-OIDC
 
 The Solid team, while [researching additional authentication
-mechanisms](https://github.com/solid/solid/issues/22) to run alongside the
-existing one
-([WebID-TLS](https://github.com/solid/solid-spec/blob/master/authn-webid-tls.md)),
+mechanisms](https://github.com/solid/solid/issues/22),
 performed a review of existing authentication protocols that has been used by
 (or proposed for) decentralized application ecosystems. Several criteria were
 kept in mind.
