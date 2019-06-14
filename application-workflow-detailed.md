@@ -26,7 +26,7 @@ Before any requests can be made, Alice must log in:
 
 #### 1. Alice naviages to www.decentphotos.example
 
-Alice has heard of a great new site that allows her to view her friend's photos and tag faces. She navigates to `www.decentphotos.example` via he web browser which returns and html page. This page contains JavaScript that will help with the authorization process.
+Alice has heard of a great new site that allows her to view her friend's photos and tag faces. She navigates to `www.decentphotos.example` via he web browser which returns and html page. This page contains JavaScript that will help with the authentication process.
 
 #### 2. Alice clicks the "Connect" button
 
@@ -235,7 +235,7 @@ Each of these communicates something about the new client to the OP:
  - `grant_types`: A list of [OIDC grant types](http://docs.identityserver.io/en/latest/topics/grant_types.html) this client will use. `implicit` is great for web applications.
  - `issuer`: Alice's OP
  - `redirect_uris`: Redirect uris provided at the client registration stage state which redirect uris are valid during the authorization stage.
- - `response_types`: A list of [OIDC response types](https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html) the client can use. `id_token token` means that // TODO: Ask Dmitri about wrapping an id_token in a pop token. Should it not be the access token?
+ - `response_types`: A list of [OIDC response types](https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html) the client can use. `id_token token` means that it should return both an Id Token (needed to identify this application later) and an access token.
  - `scope`: OIDC uses scope as a way of defining what a client can have acces to. However, Solid has it's own access control system, so scope will always be `openid profile`
 
 #### 10: Saves Client Information
@@ -251,7 +251,7 @@ Response Body:
 {  
   "client_id":"7243fd594bdcf9c71a9b902274afaa30",
   "redirect_uris":[  
-    "https://chat.o.team/"
+    "https://www.decentphotos.example/"
   ],
   "response_types":[  
     "id_token token"
@@ -264,7 +264,7 @@ Response Body:
   "token_endpoint_auth_method":"client_secret_basic",
   "frontchannel_logout_session_required":false,
   "registration_access_token":"eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3NvbGlkLmNvbW11bml0eSIsInN1YiI6IjcyNDNmZDU5NGJkY2Y5YzcxYTliOTAyMjc0YWZhYTMwIiwiYXVkIjoiNzI0M2ZkNTk0YmRjZjljNzFhOWI5MDIyNzRhZmFhMzAifQ.gypiiq3K5_oRpEN7e1KaobI5CwWdrr7ZpwhdjUMneSEOEUVOwE0qeWlzu44j24eOIGeX8PzTc-f5ca0cRk22HSSRZIcAVo-GmGlZ4oAA5uGOuiEdncaF3ZKDv-0q1WXiyUFD_2hiiUrQwLtt-iSo3ZQOlCMP3opC6A73-b6UpOJTc9Q-V-sNTtOZ5IHpgOSkQZbgSuQr_vTGRLjoHl_v_8-AarjUIytbf_6h9iEFuPOyqugMUFALeNPBHSN8CTgJI3jcvx4HZtM9ByHNGGPjZv4TJrXy1sJIHokJkwdg1Pv_3mkUKVwtO4zxKAOu5MlspaZo6c-Oku__9S2mnu88xQ",
-  "registration_client_uri":"https://solid.community/register/7243fd594bdcf9c71a9b902274afaa30",
+  "registration_client_uri":"https://secureauth.example/register/7243fd594bdcf9c71a9b902274afaa30",
   "client_id_issued_at":1557964995
 }
 ```
@@ -284,6 +284,159 @@ CLIENT_REGISTRATION_RESPONSE
 
 #### 12. Authorization Request
 
-// TODO complete explanation
+Now that the app is registered, we can finally make an auth request to authorize the application.
 
-#### 
+```
+GET https://secureauth.example/authorize?scope=openid&client_id=7243fd594bdcf9c71a9b902274afaa30&response_type=id_token%20token&redirect_uri=https%3A%2F%2Fwww.decentphotos.example%2F&request=eyJhbGciOiJub25lIn0.eyJyZWRpcmVjdF91cmkiOiJodHRwczovL2NoYXQuby50ZWFtLyIsImRpc3BsYXkiOiJwYWdlIiwibm9uY2UiOiJSWVRfUHFDMmpVMVNremoyTkViTjVFaUZFQ0szdTlad2dOcVlhVkl1RlFnIiwia2V5Ijp7ImFsZyI6IlJTMjU2IiwiZSI6IkFRQUIiLCJleHQiOnRydWUsImtleV9vcHMiOlsidmVyaWZ5Il0sImt0eSI6IlJTQSIsIm4iOiIyenltRTFQdDlPTm5saWpIMHlQN2ItZlUzZ0Vsb3liT3FNbVlKMHNTdFkxRU1DbzhUTXRLZkZtOXIwUnV6clRLMDJOX3VDNjZFcEdTaE9WeDJpMkRIMW1la1ZDeWV3a1pJM3BDZGVkUVk5dDhsY0VHUE5vcUVwSDViRkNZT2Jud3QtbHVUa0Q4N2hFX19MbWtrQV9wNG85MFZpREUwcEloYWxNaWt5SUsxNmZqV3I4dmFaeXRqbUVpUS04Z3k1SzZZSUpUdHJISXI4Yzd2dXprczJQeTlXb0xlOG8yVTBvaGFtRWd2QjhhbFJBUFFsUldiUHh3ZG5rVm85ZnI5UFBQelgzdHh4a2Q1NnN3andPZFJWalZwZmVoUVV0dDBuTHUwNDBjV3B2a1gwU1V4NnZMTklyYlExclM5UXkxMkdReGlqZDhfUjd1MFpIV1BoRkp3Y2hjancifX0.&state=L4F7Z7GrCu6cfxTh1qcEtCg1bfrs5daLhU5onmjeTS4
+```
+
+That url might look a little complex, but it's essentially a request to `https://secureauth.example/authorize` with the following url parameters:
+
+ - `scope=open_id`: a list of [oidc scpes](https://auth0.com/docs/scopes/current/oidc-scopes) (ways to communicate what the kind of information the authorization request should wants to get access to). `open_id` is a scope that is needed to verify Alice's identity.
+ - `client_id=7243fd594bdcf9c71a9b902274afaa30`: indicates the id of the client. The value for this field should be obtained in the registration phase.
+ - `response_type=id_token%20token` indicates the desired response data. Note that you cannot use response types that were not previously indicated during registration.
+ - `request=eyJhbGciOiJub25lIn0.eyJyZWRpc...`: A JWT containing the public key of the client and signed by the client using the private key. This is unique to webId-oidc. We will eventually use this to generate our pop-token.
+
+ When unencrypted the request looks like
+
+ ```json
+{
+  "redirect_uri": "https://www.decentphotos.example/",
+  "display": "page",
+  "nonce": "RYT_PqC2jU1Skzj2NEbN5EiFECK3u9ZwgNqYaVIuFQg",
+  "key": {
+    "alg": "RS256",
+    "e": "AQAB",
+    "ext": true,
+    "key_ops": [
+      "verify"
+    ],
+    "kty": "RSA",
+    "n": "2zymE1Pt9ONnlijH0yP7b-fU3gEloybOqMmYJ0sStY1EMCo8TMtKfFm9r0RuzrTK02N_uC66EpGShOVx2i2DH1mekVCyewkZI3pCdedQY9t8lcEGPNoqEpH5bFCYObnwt-luTkD87hE__LmkkA_p4o90ViDE0pIhalMikyIK16fjWr8vaZytjmEiQ-8gy5K6YIJTtrHIr8c7vuzks2Py9WoLe8o2U0ohamEgvB8alRAPQlRWbPxwdnkVo9fr9PPPzX3txxkd56swjwOdRVjVpfehQUtt0nLu040cWpvkX0SUx6vLNIrbQ1rS9Qy12GQxijd8_R7u0ZHWPhFJwchcjw"
+  }
+}
+ ```
+
+ Notice that the `key` contains the public key generated earlier.
+
+#### 13. Gets Alice's Consent
+
+Given everything checks out in the last step, the OP should redirect to it's login screen. The actual implementation of this is completely up to the OP. A user can log in with her password, a TLS certificate, or any other proven method of authentication. The important thing is that, thanks to the redirect, the control is now out of the hands of the RP and is in complete control of the OP.
+
+#### 14. Generates an id_token
+
+The OP should generate a JWT [id token](https://www.oauth.com/oauth2-servers/openid-connect/id-tokens/) as per the oidc specifications. When decoded, the id_token could look like this.
+
+```json
+{
+  "iss": "https://secureauth.example",
+  "sub": "https://alice.coolpod.example/profile/card#me",
+  "aud": "https://www.decentphotos.example",
+  "exp": 1561685957,
+  "iat": 1560476357,
+  "jti": "dae3f18302519787",
+  "nonce": "wy7zVjks3c6orHCVXs0K92sPpJQeUYehT6ioNkauZBE",
+  "azp": "bcf8f216271b674be45a53a5a22d1f1f",
+  "cnf": {
+    "jwk": {
+      "alg": "RS256",
+      "e": "AQAB",
+      "ext": true,
+      "key_ops": [
+        "verify"
+      ],
+      "kty": "RSA",
+      "n": "zeBb4HV_zkoDRFXgNTqgfWI66Nj29YnFsu9yKdFTXCkfN6Vzj3mJbUj335iRqvp7bwJRuMhk-VYVL1paV2LMOllaqWfrf4LDh3sqysPnHBuL08Ejei3R9buoOaevHY-gyxcwm8vdLpeuWulN-t11vigDKLFzHdRxJRSby1-1D0KUo2K8L4yu0XHd2cUIb4ejC16NbzRBkTbKo4-HbNB0GhM36EMW_DvJJeANNcUFY_yVDFuIGUqQIvoE3wi581I9lLXak58jrRRf53Lx0nBOSpJIFL_0ljmUpLZIR4rdxTkTxXAzqHPmFUcwGhhDjiS2dQMFL5pjztOyqUxS-EyIhQ"
+    }
+  },
+  "at_hash": "vbHexnl9TPOk3xYbGq-FFA"
+}
+```
+
+There are a few important fields to note here:
+ - `iss`: This issuer or OP that created and signed this token.
+ - `sub`: The subject of the token, signifying that this token represents Alice.
+ - `aud`: The audience of the token. This token is for the use of decentphotos and if it is provided to any other service that service should reject it because that means the token has been stolen.
+ - `cnf`: This is the exact same public key passed to the OP before. It will later be used to help confirm that the OP is okay with pop tokens that have been signed by the RP.
+
+#### 15. Redirects to redirect_url
+
+Once everything is authenticated and the tokens are generated, the OP should redirect to the RP at the redirect url. 
+
+```
+302 redirect to: https://chat.o.team/#access_token=eyJhbGciOiJSUzI1NiIsImtpZCI6Ik9pRHN6Q0xkR1c0In0.eyJpc3MiOiJodHRwczovL3NvbGlkLmNvbW11bml0eSIsInN1YiI6Imh0dHBzOi8vamFja3Nvbi5zb2xpZC5jb21tdW5pdHkvcHJvZmlsZS9jYXJkI21lIiwiYXVkIjoiYmNmOGYyMTYyNzFiNjc0YmU0NWE1M2E1YTIyZDFmMWYiLCJleHAiOjE1NjE2ODU5NTcsImlhdCI6MTU2MDQ3NjM1NywianRpIjoiYTU4ZGM4NzYwYmY3MWEwZCIsInNjb3BlIjoib3BlbmlkIn0.fhgHC-A_r_29VgHmI_U5VN7MPFozA1a2kChOFxZTlR70uXcDoj9UGEe5XDqAPHCl8vk-ZGNtN0DKk9z0pXaWM4PY5oDOEQTKsbwMOuB40E6IPDQoYp5Dgl1fvJG4rBUnOyd60PwXvRQKK2y1-f7iHVrnDA6DztZoGlr2HaN4s11mjdxhoAxw71J51osAqolPl2dm5TWh8Hu4ff-_UHkdlXR4baMkyOjmcWpfWzEyuxgQTWGfDvFIRQNCpbTMY172U1gCeINYJ4zBCqU7WgOGKeZoXVW4oJwp9cjpt2CsKOzFTIByLe61cKlLIClN17ahhWS2wTocz4jqMojylkFUHQ&token_type=Bearer&expires_in=1209600&id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6Im02aGRrSnR5QUpNIn0.eyJpc3MiOiJodHRwczovL3NvbGlkLmNvbW11bml0eSIsInN1YiI6Imh0dHBzOi8vamFja3Nvbi5zb2xpZC5jb21tdW5pdHkvcHJvZmlsZS9jYXJkI21lIiwiYXVkIjoiYmNmOGYyMTYyNzFiNjc0YmU0NWE1M2E1YTIyZDFmMWYiLCJleHAiOjE1NjE2ODU5NTcsImlhdCI6MTU2MDQ3NjM1NywianRpIjoiZGFlM2YxODMwMjUxOTc4NyIsIm5vbmNlIjoid3k3elZqa3MzYzZvckhDVlhzMEs5MnNQcEpRZVVZZWhUNmlvTmthdVpCRSIsImF6cCI6ImJjZjhmMjE2MjcxYjY3NGJlNDVhNTNhNWEyMmQxZjFmIiwiY25mIjp7Imp3ayI6eyJhbGciOiJSUzI1NiIsImUiOiJBUUFCIiwiZXh0Ijp0cnVlLCJrZXlfb3BzIjpbInZlcmlmeSJdLCJrdHkiOiJSU0EiLCJuIjoiemVCYjRIVl96a29EUkZYZ05UcWdmV0k2Nk5qMjlZbkZzdTl5S2RGVFhDa2ZONlZ6ajNtSmJVajMzNWlScXZwN2J3SlJ1TWhrLVZZVkwxcGFWMkxNT2xsYXFXZnJmNExEaDNzcXlzUG5IQnVMMDhFamVpM1I5YnVvT2FldkhZLWd5eGN3bTh2ZExwZXVXdWxOLXQxMXZpZ0RLTEZ6SGRSeEpSU2J5MS0xRDBLVW8ySzhMNHl1MFhIZDJjVUliNGVqQzE2TmJ6UkJrVGJLbzQtSGJOQjBHaE0zNkVNV19EdkpKZUFOTmNVRllfeVZERnVJR1VxUUl2b0Uzd2k1ODFJOWxMWGFrNThqclJSZjUzTHgwbkJPU3BKSUZMXzBsam1VcExaSVI0cmR4VGtUeFhBenFIUG1GVWN3R2hoRGppUzJkUU1GTDVwanp0T3lxVXhTLUV5SWhRIn19LCJhdF9oYXNoIjoidmJIZXhubDlUUE9rM3hZYkdxLUZGQSJ9.Q5SfKAM4tnlYnFcpcagfd7xVi6U8T6Focax5MS6my36InYrMF7hfzy2611yAy_BpUittJj9nE5ONodoK-m-YERX1anfqfEjKMvQDKgKzZj5FsFT4sCLfIyHq-LcdVAsSz-y3e-x6nlLJVy3jiBs6vGUxbVRLciqE4zggSZx22GbJAWw457leMx9uvC2ijov3a8tR_ygn4ovHOgipfz8lkQUjL7AtOUqpon4oDTsOSVQBDELPJeh1AW3G3utV4HhPbwh2W6BFh3jUTmLZ9n80xxoachLqdKq6YIIrS38OjYNGKmQjb_KN5IiBrkufthG1l3rhamnxLxWkcPpGd0aKRg&state=kZdwwJSxUX_CkFYtqW5-50IaYMhNJUd5H2v69A8eOhE
+```
+
+#### 16. Saves the id_token to local storage
+
+Now the RP has an id_token it can use to make requests. The login process is complete, and we can move on to making a request.
+
+Currently in local storage:
+```
+OPENID_CONFIGURATION
+RP_PRIVATE_KEY
+RP_PUBLIC_KEY
+OP_JWKS
+CLIENT_REGISTRATION_RESPONSE
+ID_TOKEN
+```
+
+### Sending a Request
+
+#### 1. Wraps id_token in pop_token
+
+A Solid application could need to talk to any number of Resource Servers. Because of this, we do not want a single token that's used to talk to all of them. A malicious resource server could steal that token and pretend to be the app. Instead, we wrap the id_token we've received from the OP in another token signed by the app. This is called a pop_token.
+
+When decrypted, a pop_token can look like
+
+```json
+{
+  "iss": "https://www.decentphotos.example",
+  "aud": "https://bob.solid.example",
+  "exp": 1560481857,
+  "iat": 1560478257,
+  "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Im02aGRrSnR5QUpNIn0.eyJpc3MiOiJodHRwczovL3NvbGlkLmNvbW11bml0eSIsInN1YiI6Imh0dHBzOi8vamFja3Nvbi5zb2xpZC5jb21tdW5pdHkvcHJvZmlsZS9jYXJkI21lIiwiYXVkIjoiYmNmOGYyMTYyNzFiNjc0YmU0NWE1M2E1YTIyZDFmMWYiLCJleHAiOjE1NjE2ODU5NTcsImlhdCI6MTU2MDQ3NjM1NywianRpIjoiZGFlM2YxODMwMjUxOTc4NyIsIm5vbmNlIjoid3k3elZqa3MzYzZvckhDVlhzMEs5MnNQcEpRZVVZZWhUNmlvTmthdVpCRSIsImF6cCI6ImJjZjhmMjE2MjcxYjY3NGJlNDVhNTNhNWEyMmQxZjFmIiwiY25mIjp7Imp3ayI6eyJhbGciOiJSUzI1NiIsImUiOiJBUUFCIiwiZXh0Ijp0cnVlLCJrZXlfb3BzIjpbInZlcmlmeSJdLCJrdHkiOiJSU0EiLCJuIjoiemVCYjRIVl96a29EUkZYZ05UcWdmV0k2Nk5qMjlZbkZzdTl5S2RGVFhDa2ZONlZ6ajNtSmJVajMzNWlScXZwN2J3SlJ1TWhrLVZZVkwxcGFWMkxNT2xsYXFXZnJmNExEaDNzcXlzUG5IQnVMMDhFamVpM1I5YnVvT2FldkhZLWd5eGN3bTh2ZExwZXVXdWxOLXQxMXZpZ0RLTEZ6SGRSeEpSU2J5MS0xRDBLVW8ySzhMNHl1MFhIZDJjVUliNGVqQzE2TmJ6UkJrVGJLbzQtSGJOQjBHaE0zNkVNV19EdkpKZUFOTmNVRllfeVZERnVJR1VxUUl2b0Uzd2k1ODFJOWxMWGFrNThqclJSZjUzTHgwbkJPU3BKSUZMXzBsam1VcExaSVI0cmR4VGtUeFhBenFIUG1GVWN3R2hoRGppUzJkUU1GTDVwanp0T3lxVXhTLUV5SWhRIn19LCJhdF9oYXNoIjoidmJIZXhubDlUUE9rM3hZYkdxLUZGQSJ9.Q5SfKAM4tnlYnFcpcagfd7xVi6U8T6Focax5MS6my36InYrMF7hfzy2611yAy_BpUittJj9nE5ONodoK-m-YERX1anfqfEjKMvQDKgKzZj5FsFT4sCLfIyHq-LcdVAsSz-y3e-x6nlLJVy3jiBs6vGUxbVRLciqE4zggSZx22GbJAWw457leMx9uvC2ijov3a8tR_ygn4ovHOgipfz8lkQUjL7AtOUqpon4oDTsOSVQBDELPJeh1AW3G3utV4HhPbwh2W6BFh3jUTmLZ9n80xxoachLqdKq6YIIrS38OjYNGKmQjb_KN5IiBrkufthG1l3rhamnxLxWkcPpGd0aKRg",
+  "token_type": "pop"
+}
+```
+
+Notice this in this new token, the app is now the issuer and the audience is the specific serer to which we are sending a request. The id_token field contains the same token that we've saved to local storage.
+
+#### 2. Request sent
+
+When you send a request, the pop_token MUST be included as an `authorization` header as a bearer token.
+
+```
+GET https://bob.solid.example/photos/my_photos_with_alice/vacation.png
+HEADERS:
+  authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJiY2Y4ZjIxNjI3MWI2NzRiZTQ1YTUzYTVhMjJkMWYxZiIsImF1ZCI6Imh0dHBzOi8vamFja3Nvbi5zb2xpZC5jb21tdW5pdHkiLCJleHAiOjE1NjA0ODE4NTcsImlhdCI6MTU2MDQ3ODI1NywiaWRfdG9rZW4iOiJleUpoYkdjaU9pSlNVekkxTmlJc0ltdHBaQ0k2SW0wMmFHUnJTblI1UVVwTkluMC5leUpwYzNNaU9pSm9kSFJ3Y3pvdkwzTnZiR2xrTG1OdmJXMTFibWwwZVNJc0luTjFZaUk2SW1oMGRIQnpPaTh2YW1GamEzTnZiaTV6YjJ4cFpDNWpiMjF0ZFc1cGRIa3ZjSEp2Wm1sc1pTOWpZWEprSTIxbElpd2lZWFZrSWpvaVltTm1PR1l5TVRZeU56RmlOamMwWW1VME5XRTFNMkUxWVRJeVpERm1NV1lpTENKbGVIQWlPakUxTmpFMk9EVTVOVGNzSW1saGRDSTZNVFUyTURRM05qTTFOeXdpYW5ScElqb2laR0ZsTTJZeE9ETXdNalV4T1RjNE55SXNJbTV2Ym1ObElqb2lkM2szZWxacWEzTXpZelp2Y2toRFZsaHpNRXM1TW5OUWNFcFJaVlZaWldoVU5tbHZUbXRoZFZwQ1JTSXNJbUY2Y0NJNkltSmpaamhtTWpFMk1qY3hZalkzTkdKbE5EVmhOVE5oTldFeU1tUXhaakZtSWl3aVkyNW1JanA3SW1wM2F5STZleUpoYkdjaU9pSlNVekkxTmlJc0ltVWlPaUpCVVVGQ0lpd2laWGgwSWpwMGNuVmxMQ0pyWlhsZmIzQnpJanBiSW5abGNtbG1lU0pkTENKcmRIa2lPaUpTVTBFaUxDSnVJam9pZW1WQ1lqUklWbDk2YTI5RVVrWllaMDVVY1dkbVYwazJOazVxTWpsWmJrWnpkVGw1UzJSR1ZGaERhMlpPTmxaNmFqTnRTbUpWYWpNek5XbFNjWFp3TjJKM1NsSjFUV2hyTFZaWlZrd3hjR0ZXTWt4TlQyeHNZWEZYWm5KbU5FeEVhRE56Y1hselVHNUlRblZNTURoRmFtVnBNMUk1WW5WdlQyRmxka2haTFdkNWVHTjNiVGgyWkV4d1pYVlhkV3hPTFhReE1YWnBaMFJMVEVaNlNHUlNlRXBTVTJKNU1TMHhSREJMVlc4eVN6aE1OSGwxTUZoSVpESmpWVWxpTkdWcVF6RTJUbUo2VWtKclZHSkxielF0U0dKT1FqQkhhRTB6TmtWTlYxOUVka3BLWlVGT1RtTlZSbGxmZVZaRVJuVkpSMVZ4VVVsMmIwVXpkMmsxT0RGSk9XeE1XR0ZyTlRocWNsSlNaalV6VEhnd2JrSlBVM0JLU1VaTVh6QnNhbTFWY0V4YVNWSTBjbVI0Vkd0VWVGaEJlbkZJVUcxR1ZXTjNSMmhvUkdwcFV6SmtVVTFHVERWd2FucDBUM2x4VlhoVExVVjVTV2hSSW4xOUxDSmhkRjlvWVhOb0lqb2lkbUpJWlhodWJEbFVVRTlyTTNoWllrZHhMVVpHUVNKOS5RNVNmS0FNNHRubFluRmNwY2FnZmQ3eFZpNlU4VDZGb2NheDVNUzZteTM2SW5Zck1GN2hmenkyNjExeUF5X0JwVWl0dEpqOW5FNU9Ob2RvSy1tLVlFUlgxYW5mcWZFaktNdlFES2dLelpqNUZzRlQ0c0NMZkl5SHEtTGNkVkFzU3oteTNlLXg2bmxMSlZ5M2ppQnM2dkdVeGJWUkxjaXFFNHpnZ1NaeDIyR2JKQVd3NDU3bGVNeDl1dkMyaWpvdjNhOHRSX3lnbjRvdkhPZ2lwZno4bGtRVWpMN0F0T1VxcG9uNG9EVHNPU1ZRQkRFTFBKZWgxQVczRzN1dFY0SGhQYndoMlc2QkZoM2pVVG1MWjluODB4eG9hY2hMcWRLcTZZSUlyUzM4T2pZTkdLbVFqYl9LTjVJaUJya3VmdGhHMWwzcmhhbW54THhXa2NQcEdkMGFLUmciLCJ0b2tlbl90eXBlIjoicG9wIn0.sZFJEcnhZibDwZ1NlXtR7FaPW0e2w6VCym9Xo0d1vHA8SscARLM3oFB1a9io3XFxxT2iABnuaZZL7XM7IdsaxNCPz2sqgrhFQNpQxvLygjmLvv7tZz25hvNjgBz6RbWtL2XjfpW3LLZDH0_-Xj1aVMleunDjN9JP1J43EDEgyAUs0yB8ewdYHENQJBgnnmVRaGOUjSibwsevK_aBQzIFL8zEkel-c-s1iLYhjfrEdL77he2Tyy5lRRgmNDCXDx0DyDc_WleXirSV3kaDcXh49tCPDauak0lScZl1A61CsKnOL9gps-W00QLeQo6vwzlf33zw2QYo05RxBd4fS82IQQ
+```
+
+#### 3. Checks Audience
+
+When a RS receives a pop_token it should first to see if the audience refers to itself. If it does not it MUST reject the request with a 403.
+
+#### 4. Checks client signature.
+
+The RS wants to ensure that this pop_token truely came from the client that the OP said it should come from when it signed the id_token. To do so, the RS should ensure that the public key included in the `cnf` field of the id_token matches the signature of the pop_token. If they do not match the RS MUST reject the request with a 403.
+
+#### 5. Requests public keys
+
+Now that we've confirmed the validity of the pop_token, we want to ensure the validity of the id_token it contains. To do so, we need the OP's public keys. The OP's address can be obtained via the `iss` field of the id_token (https://secureauth.example). Recall how to retrieve the OP's public keys in steps 3, 4, 7, and 8 of the authorization instructions.
+
+```
+GET https://secureauth.example/.well-known/openid-configuration
+```
+```
+GET https://secureauth.example/jwks
+```
+
+In order to decrease network usage, RSs SHOULD cache these keys once received and skip this step given keys are already in the cache.
+
+#### 6. Performs Authentication
+
+With OP public keys obtained, the RS can confirm if the id_token was signed by the OP. If it was not, the RS must reject the request with a 403.
+
+#### 7. Returns Result
+
+Given all went well, the RS should return the requested content.
