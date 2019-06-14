@@ -43,7 +43,8 @@ See also: [Motivation for WebID-OIDC](motivation.md).
 ### Benefits and Capabilities
 
 * Fully decentralized cross-domain authentication (any peer node can serve as
-  an identity provider as well as a relying party to any other node) made possible by [PoP Tokens](https://tools.ietf.org/html/rfc7800).
+  an identity provider as well as a relying party to any other node) made possible by
+  [Proof of Posession (PoP) Tokens](https://tools.ietf.org/html/rfc7800).
 * Builds on decades of real-world authentication industry experience
 * Incorporates lessons from, and fixes to threat models of: SAML, OpenID and
   OpenID 2, OAuth and OAuth 2. See, for example, [RFC 6819 - OAuth 2.0 Threat
@@ -310,7 +311,7 @@ that profile, she would add the following triple to her profile:
 
 #### The Problem
 
-Unlike standard implementations of OIDC, WebID-OIDC must deal with a number of RSs many of which the OP will not know about. OIDC defines the `aud` claim which defines the RSs for which a token can be used.
+WebID-OIDC must deal with a number of RSs many of which the OP will not know about. OIDC defines the `aud` claim which defines the RSs for which a token can be used.
 
 However, given Solid's use case, a token should be usable for any RS so the user may federate a query across multiple Pods, so the `aud`ience cannot be constrained. Yet, an unconstrained `aud`ience opens up the possibility of token stealing. In this case, a user sends a request to `evilPod.example`. The Pod returns the requested information, but now has the user's token and may pretend to be the user on any other Pod in the world.
 
