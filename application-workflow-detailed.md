@@ -18,7 +18,7 @@ In this example a multitude of actors are at play:
 
 ## Application Flow
 
-![Application Login Flow](ApplicationLoginFlow.png)
+![Application Login Flow](ApplicationWorkflow.png)
 
 ### Authorization
 
