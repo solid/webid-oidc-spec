@@ -223,11 +223,11 @@ POST https://secureauth.example/register
 Data:
 ```json
 {
-  grant_types: ["implicit"]
-  issuer: "https://secureauth.example"
-  redirect_uris: ["https://www.decentphotos.example/"]
-  response_types: ["id_token token"]
-  scope: "openid profile"
+  "grant_types": ["implicit"],
+  "issuer": "https://secureauth.example",
+  "redirect_uris": ["https://www.decentphotos.example/"],
+  "response_types": ["id_token token"],
+  "scope": "openid profile"
 }
 ```
 
