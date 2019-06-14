@@ -81,7 +81,7 @@ Relying Party (`bob.example`) have interacted, `bob.example` must dynamically re
 itself *as a client/relying party* to `alice.example`. Bob's POD (in the RP role)
 performs dynamic registration with Alice's POD (in the Provider role), and as
 a result `bob.example` receives its very own `client_id` which identifies it
-uniquely as a Relying Party to `alice.example`. The `client_id` MUST be the host
+uniquely as a Relying Party to `alice.example`. The `client_id` MUST be identical to the host
 of the client's `Origin` header (`bob.example`). This will be used later to validate
 redirects.
 
