@@ -121,7 +121,7 @@ For example, here is what happens when Alice tries to request the resource
    example, `alice.solidtest.space`), or entering her email.
 3. [Local
    Authentication](example-workflow.md#3-local-authentication-to-provider):
-   Alice gets redirected towards her service provider's own Sign In page, thus requesting
+   Alice gets redirected towards her identity provider's own Sign In page, thus requesting
    `https://alice.solidtest.space/signin`, and authenticates using her preferred
    method (password, WebID-TLS certificate, FIDO 2 /
    [WebAuthn](https://w3c.github.io/webauthn/) device, etc).
@@ -137,6 +137,9 @@ For example, here is what happens when Alice tries to request the resource
    `bob.example` (the server controlling the resource) validates the ID Token, and
    extracts Alice's WebID URI from inside  it. She is now signed in to
    `bob.example` as user `https://alice.solidtest.space/#i`.
+7. Deriving an app origin:
+   `bob.example` (the server controlling the resource) can use the PoP token's
+   issuer to establish the web app's origin.
 7. [WebID Provider Confirmation](#webid-provider-confirmation):
    `bob.example` confirms that `solidtest.space` is indeed Alice's authorized OIDC
    provider (by matching the provider URI from the `iss` claim with Alice's
