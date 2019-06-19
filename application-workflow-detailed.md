@@ -467,13 +467,18 @@ A request should be made to url in the `sub` field of the id_token (The user's P
 
 Compare the issuer retrieved in step 5 with the issuer of the id token. If they are not identical the RS must reject the request with a 403.
 
-#### 7. Requests public keys
+#### 7. Retrieves OP Configuration
 
-Now that we've confirmed the validity of the pop_token and the subject of the identity token, we want to ensure the validity of the id_token it contains. To do so, we need the OP's public keys. The OP's address can be obtained via the `iss` field of the id_token (https://secureauth.example). Recall how to retrieve the OP's public keys in steps 3, 4, 7, and 8 of the authorization instructions.
+Before the RS requests information from the thrid-party OP, it must retrieve its configuration. The OP's address can be obtained via the `iss` field of the id_token (https://secureauth.example). Recall how to retrieve the OP's configuration in steps 3 and 4 of the authroization instructions.
 
 ```
 GET https://secureauth.example/.well-known/openid-configuration
 ```
+
+#### 7. Requests public keys
+
+Now that we've confirmed the validity of the pop_token and the subject of the identity token, we want to ensure the validity of the id_token it contains. To do so, we need the OP's public keys. The route to retrieve the public keys is listed in the OP Configuration fetched in the previous step. Recall how to retrieve the OP's public keys in steps 7, and 8 of the authorization instructions.
+
 ```
 GET https://secureauth.example/jwks
 ```
