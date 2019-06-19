@@ -475,7 +475,7 @@ Before the RS requests information from the thrid-party OP, it must retrieve its
 GET https://secureauth.example/.well-known/openid-configuration
 ```
 
-#### 7. Requests public keys
+#### 8. Requests public keys
 
 Now that we've confirmed the validity of the pop_token and the subject of the identity token, we want to ensure the validity of the id_token it contains. To do so, we need the OP's public keys. The route to retrieve the public keys is listed in the OP Configuration fetched in the previous step. Recall how to retrieve the OP's public keys in steps 7, and 8 of the authorization instructions.
 
@@ -485,10 +485,10 @@ GET https://secureauth.example/jwks
 
 In order to decrease network usage, RSs SHOULD cache these keys once received and skip this step given keys are already in the cache.
 
-#### 8. Performs Authentication
+#### 9. Performs Authentication
 
 With OP public keys obtained, the RS can confirm if the id_token was signed by the OP. If it was not, the RS must reject the request with a 403.
 
-#### 9. Returns Result
+#### 10. Returns Result
 
 Given all went well, the RS should return the requested content.
