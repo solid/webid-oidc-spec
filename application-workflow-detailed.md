@@ -1,6 +1,6 @@
 # Detailed Web Application Authentication
 
-This document outlines, in detail, the login and request process for an web application using WebId-OIDC. In general, our user, *Alice* will be using a third-party web application at `https://www.decentphotos.example`  to access data on both her pod at `https://alice.example` and her friend, Bob's pod at `https://bob.example`.
+This document outlines, in detail, the login and request process for a web application using WebId-OIDC. In general, our user, *Alice* will be using a third-party web application at `https://www.decentphotos.example`  to access data on both her pod at `https://alice.example` and her friend, Bob's pod at `https://bob.example`.
 
 ## Actors
 
@@ -8,13 +8,13 @@ In this example a multitude of actors are at play:
 
 **Alice** - Alice will be providing consent for decentphotos to use her pod. Let's assume that Alice is using a standard web browser.
 
-**Bob's Pod (RS)** - We will be trying to access photos stored in Bob's Pod, known in the OIDC world as a Resource Server (RS). Bob is a friend of Alice. For this use case, let's assume that Bob has previously indicated via access control that Alice may access his photo using any webapp. You can read more about access control [here](https://github.com/solid/web-access-control-spec#referring-to-origins-ie-web-apps). For this example, bob's pod is at `bob.solid.example`.
+**Bob's Pod (RS)** - We will be trying to access photos stored in Bob's Pod, known in the OIDC world as a Resource Server (RS). Bob is a friend of Alice. For this use case, let's assume that Bob has previously indicated via access control that Alice may access his photo using any web app. You can read more about access control [here](https://github.com/solid/web-access-control-spec#referring-to-origins-ie-web-apps). For this example, bob's pod is at `bob.solid.example`.
 
-**Alice's OP** - Alice's OpenID Provider (OP), also known as an IDP (Identity Provider), is the service responsible for authorizing our third-party webapp by providing it with the tokens necessary to gain access to any pod. In this demo, alice's OP is at `secureauth.example`.
+**Alice's OP** - Alice's OpenID Provider (OP), also known as an IDP (Identity Provider), is the service responsible for authorizing our third-party web app by providing it with the tokens necessary to gain access to any pod. In this demo, Alice's OP is at `secureauth.example`.
 
 **Alice's Pod (RS)** - Alice's Pod is hosted at `alice.coolpod.example`, giving Alice the webId of `https://alice.coolpod.example/profile/card#me`.
 
-**Decent Photos (RP)** - decentphotos is a third party photo viewing web application hosted at `https://www.decentphotos.example`. This webapp allows you to view your photos as well as your friend's photos. It will also perform cron jobs on the photos to detect faces. In the OIDC world this is known as the Relying Party (RP).
+**Decent Photos (RP)** - decentphotos is a third party photo viewing web application hosted at `https://www.decentphotos.example`. This web app allows you to view your photos as well as your friend's photos. It will also perform cron jobs on the photos to detect faces. In the OIDC world, this is known as the Relying Party (RP).
 
 ## Application Flow
 
@@ -26,17 +26,17 @@ Before any requests can be made, Alice must log in:
 
 #### 1. Alice navigates to www.decentphotos.example
 
-Alice has heard of a great new site that allows her to view her friend's photos and tag faces. She navigates to `www.decentphotos.example` via her web browser which returns an html page. This page contains JavaScript that will help with the authentication process.
+Alice has heard of a great new site that allows her to view her friend's photos and tag faces. She navigates to `www.decentphotos.example` via her web browser which returns an HTML page. This page contains JavaScript that will help with the authentication process.
 
 #### 2. Alice clicks the "Connect" button
 
-Before decentphotos can start displaying images, Alice needs to start the process of providing consent. To do so, she must either provide her webId (`https://alice.coolpod.example/profile/card#me`) or the url of her OP (`https://secureauth.example`) 
+Before decentphotos can start displaying images, Alice needs to start the process of providing consent. To do so, she must either provide her webId (`https://alice.coolpod.example/profile/card#me`) or the URL of her OP (`https://secureauth.example`) 
 
 While it is not the case with Alice, a user's Pod and OP can be hosted at the same domain. For example, Bob's pod could be `bob.solid.example` with a webId of `https://bob.solid.example/profile/card#me`, but his OP is at `https://solid.example`.
 
 ##### 2.1. Retrieve Profile
 
-If Alice entered her Pod's url rather than her OP's url, a request should be make to determine her OP. There are two ways to do this and Pods may support one or both of them:
+If Alice entered her Pod's URL rather than her OP's URL, a request should be made to determine her OP. There are two ways to do this and Pods may support one or both of them:
 
 Firstly, the RP should make an `OPTIONS` request to the Pod:
 
@@ -78,11 +78,11 @@ It will return a bod similar to this:
     solid:oidcIssuer <https://secureauth.example> ;
 ```
 
-The OP url is located at `:me -> solid:oidcIssuer`
+The OP URL is located at `:me -> solid:oidcIssuer`
 
 #### 3. Request OP Configuration
 
-Now that we have Alice's OP's url, the RP must make a request to retrieve the OP's configuration. This is always located at the OP's host followed by `/.well-known/openid-configuration`
+Now that we have Alice's OP's URL, the RP must make a request to retrieve the OP's configuration. This is always located at the OP's host followed by `/.well-known/openid-configuration`
 
 ```
 GET https://secureauth.example/.well-known/openid-configuration
@@ -90,7 +90,7 @@ GET https://secureauth.example/.well-known/openid-configuration
 
 #### 4. Returns OP Configuration
 
-Regardless of the what Alice entered, the response body should be the same. The [openid-configuration](https://auth0.com/docs/protocols/oidc/openid-connect-discovery) describes everything the client will need to know to authorize with Alice's specific OP.
+Regardless of what Alice entered, the response body should be the same. The [openid-configuration](https://auth0.com/docs/protocols/oidc/openid-connect-discovery) describes everything the client will need to know to authorize with Alice's specific OP.
 
 Response Body:
 ```json
@@ -163,7 +163,7 @@ OPENID_CONFIGURATION
 
 #### 5. Generates a Private/Public key pair
 
-WebId-OIDC depends on [Proof of Posession (PoP) tokens](README.md#securing-tokens-for-multiple-resource-servers). PoP tokens ensure that third-party web applications can send requests to any number of Pods, while ensuring that evil pods can't steal a user's token.
+WebId-OIDC depends on [Proof of Possession (PoP) tokens](README.md#securing-tokens-for-multiple-resource-servers). PoP tokens ensure that third-party web applications can send requests to any number of Pods while ensuring that evil pods can't steal a user's token.
 
 The first step to generating a PoP token is generating a public and private key pair on the third-party RP. In our example, the private key is generated using `RSA256` and looks like:
 
@@ -273,9 +273,9 @@ Data:
 Each of these communicates something about the new client to the OP:
  - `grant_types`: A list of [OIDC grant types](http://docs.identityserver.io/en/latest/topics/grant_types.html) this client will use. `implicit` is great for web applications.
  - `issuer`: Alice's OP
- - `redirect_uris`: Redirect uris provided at the client registration stage state which redirect uris are valid during the authorization stage.
+ - `redirect_uris`: Redirect URIs provided at the client registration stage state which redirect URIs are valid during the authorization stage.
  - `response_types`: A list of [OIDC response types](https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html) the client can use. `id_token token` means that it should return both an Id Token (needed to identify this web application later) and an access token.
- - `scope`: OIDC uses scope as a way of defining what a client can have access to. However, Solid has its own access control system, so scope will always be `openid profile`
+ - `scope`: OIDC uses 'scope' as a way of defining what a client can have access to. However, Solid has its own access control system, so scope will always be `openid profile`
 
 #### 10: Saves Client Information
 
@@ -323,13 +323,13 @@ CLIENT_REGISTRATION_RESPONSE
 
 #### 12. Authorization Request
 
-Now that the webapp is registered, we can finally make an auth request to authorize the web application.
+Now that the web app is registered, we can finally make an auth request to authorize the web application.
 
 ```
 GET https://secureauth.example/authorize?scope=openid&client_id=7243fd594bdcf9c71a9b902274afaa30&response_type=id_token%20token&redirect_uri=https%3A%2F%2Fwww.decentphotos.example%2F&request=eyJhbGciOiJub25lIn0.eyJyZWRpcmVjdF91cmkiOiJodHRwczovL2NoYXQuby50ZWFtLyIsImRpc3BsYXkiOiJwYWdlIiwibm9uY2UiOiJSWVRfUHFDMmpVMVNremoyTkViTjVFaUZFQ0szdTlad2dOcVlhVkl1RlFnIiwia2V5Ijp7ImFsZyI6IlJTMjU2IiwiZSI6IkFRQUIiLCJleHQiOnRydWUsImtleV9vcHMiOlsidmVyaWZ5Il0sImt0eSI6IlJTQSIsIm4iOiIyenltRTFQdDlPTm5saWpIMHlQN2ItZlUzZ0Vsb3liT3FNbVlKMHNTdFkxRU1DbzhUTXRLZkZtOXIwUnV6clRLMDJOX3VDNjZFcEdTaE9WeDJpMkRIMW1la1ZDeWV3a1pJM3BDZGVkUVk5dDhsY0VHUE5vcUVwSDViRkNZT2Jud3QtbHVUa0Q4N2hFX19MbWtrQV9wNG85MFZpREUwcEloYWxNaWt5SUsxNmZqV3I4dmFaeXRqbUVpUS04Z3k1SzZZSUpUdHJISXI4Yzd2dXprczJQeTlXb0xlOG8yVTBvaGFtRWd2QjhhbFJBUFFsUldiUHh3ZG5rVm85ZnI5UFBQelgzdHh4a2Q1NnN3andPZFJWalZwZmVoUVV0dDBuTHUwNDBjV3B2a1gwU1V4NnZMTklyYlExclM5UXkxMkdReGlqZDhfUjd1MFpIV1BoRkp3Y2hjancifX0.&state=L4F7Z7GrCu6cfxTh1qcEtCg1bfrs5daLhU5onmjeTS4
 ```
 
-That url might look a little complex, but it's essentially a request to `https://secureauth.example/authorize` with the following url parameters:
+That URL might look a little complex, but it's essentially a request to `https://secureauth.example/authorize` with the following URL parameters:
 
  - `scope=open_id`: a list of [oidc scpes](https://auth0.com/docs/scopes/current/oidc-scopes) (attributes of the RS to which this token should have access). `open_id` is a scope that is needed to verify Alice's identity.
  - `client_id=7243fd594bdcf9c71a9b902274afaa30`: indicates the id of the client. The value for this field should be obtained in the registration phase.
@@ -400,7 +400,7 @@ There are a few important fields to note here:
 
 #### 15. Redirects to redirect_url
 
-Once everything is authenticated and the tokens are generated, the OP should redirect to the RP at the redirect url. 
+Once everything is authenticated and the tokens are generated, the OP should redirect to the RP at the redirect URL. 
 
 ```
 302 redirect to: https://chat.o.team/#access_token=eyJhbGciOiJSUzI1NiIsImtpZCI6Ik9pRHN6Q0xkR1c0In0.eyJpc3MiOiJodHRwczovL3NvbGlkLmNvbW11bml0eSIsInN1YiI6Imh0dHBzOi8vamFja3Nvbi5zb2xpZC5jb21tdW5pdHkvcHJvZmlsZS9jYXJkI21lIiwiYXVkIjoiYmNmOGYyMTYyNzFiNjc0YmU0NWE1M2E1YTIyZDFmMWYiLCJleHAiOjE1NjE2ODU5NTcsImlhdCI6MTU2MDQ3NjM1NywianRpIjoiYTU4ZGM4NzYwYmY3MWEwZCIsInNjb3BlIjoib3BlbmlkIn0.fhgHC-A_r_29VgHmI_U5VN7MPFozA1a2kChOFxZTlR70uXcDoj9UGEe5XDqAPHCl8vk-ZGNtN0DKk9z0pXaWM4PY5oDOEQTKsbwMOuB40E6IPDQoYp5Dgl1fvJG4rBUnOyd60PwXvRQKK2y1-f7iHVrnDA6DztZoGlr2HaN4s11mjdxhoAxw71J51osAqolPl2dm5TWh8Hu4ff-_UHkdlXR4baMkyOjmcWpfWzEyuxgQTWGfDvFIRQNCpbTMY172U1gCeINYJ4zBCqU7WgOGKeZoXVW4oJwp9cjpt2CsKOzFTIByLe61cKlLIClN17ahhWS2wTocz4jqMojylkFUHQ&token_type=Bearer&expires_in=1209600&id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6Im02aGRrSnR5QUpNIn0.eyJpc3MiOiJodHRwczovL3NvbGlkLmNvbW11bml0eSIsInN1YiI6Imh0dHBzOi8vamFja3Nvbi5zb2xpZC5jb21tdW5pdHkvcHJvZmlsZS9jYXJkI21lIiwiYXVkIjoiYmNmOGYyMTYyNzFiNjc0YmU0NWE1M2E1YTIyZDFmMWYiLCJleHAiOjE1NjE2ODU5NTcsImlhdCI6MTU2MDQ3NjM1NywianRpIjoiZGFlM2YxODMwMjUxOTc4NyIsIm5vbmNlIjoid3k3elZqa3MzYzZvckhDVlhzMEs5MnNQcEpRZVVZZWhUNmlvTmthdVpCRSIsImF6cCI6ImJjZjhmMjE2MjcxYjY3NGJlNDVhNTNhNWEyMmQxZjFmIiwiY25mIjp7Imp3ayI6eyJhbGciOiJSUzI1NiIsImUiOiJBUUFCIiwiZXh0Ijp0cnVlLCJrZXlfb3BzIjpbInZlcmlmeSJdLCJrdHkiOiJSU0EiLCJuIjoiemVCYjRIVl96a29EUkZYZ05UcWdmV0k2Nk5qMjlZbkZzdTl5S2RGVFhDa2ZONlZ6ajNtSmJVajMzNWlScXZwN2J3SlJ1TWhrLVZZVkwxcGFWMkxNT2xsYXFXZnJmNExEaDNzcXlzUG5IQnVMMDhFamVpM1I5YnVvT2FldkhZLWd5eGN3bTh2ZExwZXVXdWxOLXQxMXZpZ0RLTEZ6SGRSeEpSU2J5MS0xRDBLVW8ySzhMNHl1MFhIZDJjVUliNGVqQzE2TmJ6UkJrVGJLbzQtSGJOQjBHaE0zNkVNV19EdkpKZUFOTmNVRllfeVZERnVJR1VxUUl2b0Uzd2k1ODFJOWxMWGFrNThqclJSZjUzTHgwbkJPU3BKSUZMXzBsam1VcExaSVI0cmR4VGtUeFhBenFIUG1GVWN3R2hoRGppUzJkUU1GTDVwanp0T3lxVXhTLUV5SWhRIn19LCJhdF9oYXNoIjoidmJIZXhubDlUUE9rM3hZYkdxLUZGQSJ9.Q5SfKAM4tnlYnFcpcagfd7xVi6U8T6Focax5MS6my36InYrMF7hfzy2611yAy_BpUittJj9nE5ONodoK-m-YERX1anfqfEjKMvQDKgKzZj5FsFT4sCLfIyHq-LcdVAsSz-y3e-x6nlLJVy3jiBs6vGUxbVRLciqE4zggSZx22GbJAWw457leMx9uvC2ijov3a8tR_ygn4ovHOgipfz8lkQUjL7AtOUqpon4oDTsOSVQBDELPJeh1AW3G3utV4HhPbwh2W6BFh3jUTmLZ9n80xxoachLqdKq6YIIrS38OjYNGKmQjb_KN5IiBrkufthG1l3rhamnxLxWkcPpGd0aKRg&state=kZdwwJSxUX_CkFYtqW5-50IaYMhNJUd5H2v69A8eOhE
@@ -424,7 +424,7 @@ ID_TOKEN
 
 #### 1. Wraps id_token in pop_token
 
-A Solid web application could need to talk to any number of Resource Servers. Because of this, we do not want a single token that's used to talk to all of them. A malicious resource server could steal that token and pretend to be the webapp. Instead, we wrap the id_token we've received from the OP in another token signed by the webapp. This is called a pop_token.
+A Solid web application could need to talk to any number of Resource Servers. Because of this, we do not want a single token that's used to talk to all of them. A malicious resource server could steal that token and pretend to be the web app. Instead, we wrap the id_token we've received from the OP in another token signed by the web app. This is called a pop_token.
 
 When decrypted, a pop_token can look like
 
@@ -439,7 +439,7 @@ When decrypted, a pop_token can look like
 }
 ```
 
-Notice this in this new token, the web app is now the issuer and the audience is the specific serer to which we are sending a request. The id_token field contains the same token that we've saved to local storage.
+Notice this in this new token, the web app is now the issuer and the audience is the specific server to which we are sending a request. The id_token field contains the same token that we've saved to local storage.
 
 #### 2. Request sent
 
@@ -453,15 +453,15 @@ HEADERS:
 
 #### 3. Checks Audience
 
-When a RS receives a pop_token it should first to see if the audience refers to itself. If it does not it MUST reject the request with a 403.
+When an RS receives a pop_token it should first to see if the audience refers to itself. If it does not it MUST reject the request with a 403.
 
 #### 4. Checks client signature.
 
-The RS wants to ensure that this pop_token truely came from the client that the OP said it should come from when it signed the id_token. To do so, the RS should ensure that the public key included in the `cnf` field of the id_token matches the signature of the pop_token. If they do not match the RS MUST reject the request with a 403.
+The RS wants to ensure that this pop_token truly came from the client that the OP said it should come from when it signed the id_token. To do so, the RS should ensure that the public key included in the `cnf` field of the id_token matches the signature of the pop_token. If they do not match the RS MUST reject the request with a 403.
 
 #### 5. Retrieves Profile
 
-A request should be made to url in the `sub` field of the id_token (The user's Pod) to determine that user's OP via the issuer attribute. For instructions on this see step 2.1 of the authorization instructions.
+A request should be made to URL in the `sub` field of the id_token (The user's Pod) to determine that user's OP via the issuer attribute. For instructions on this see step 2.1 of the authorization instructions.
 
 #### 6. Checks Issuer
 
@@ -469,7 +469,7 @@ Compare the issuer retrieved in step 5 with the issuer of the id token. If they 
 
 #### 7. Retrieves OP Configuration
 
-Before the RS requests information from the thrid-party OP, it must retrieve its configuration. The OP's address can be obtained via the `iss` field of the id_token (https://secureauth.example). Recall how to retrieve the OP's configuration in steps 3 and 4 of the authroization instructions.
+Before the RS requests information from the third-party OP, it must retrieve its configuration. The OP's address can be obtained via the `iss` field of the id_token (https://secureauth.example). Recall how to retrieve the OP's configuration in steps 3 and 4 of the authorization instructions.
 
 ```
 GET https://secureauth.example/.well-known/openid-configuration
