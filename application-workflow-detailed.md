@@ -1,6 +1,6 @@
 # Detailed Web Application Authentication
 
-This document outlines, in detail, the login and request process for a web application using WebId-OIDC. In general, our user, *Alice* will be using a third-party web application at `https://www.decentphotos.example`  to access data on both her pod at `https://alice.example` and her friend, Bob's pod at `https://bob.example`.
+This document outlines, in detail, the login and request process for a web application using WebID-OIDC. In general, our user, *Alice* will be using a third-party web application at `https://www.decentphotos.example`  to access data on both her pod at `https://alice.example` and her friend, Bob's pod at `https://bob.example`.
 
 ## Actors
 
@@ -12,7 +12,7 @@ In this example a multitude of actors are at play:
 
 **Alice's OP** - Alice's OpenID Provider (OP), also known as an IDP (Identity Provider), is the service responsible for authorizing our third-party web app by providing it with the tokens necessary to gain access to any pod. In this demo, Alice's OP is at `secureauth.example`.
 
-**Alice's Pod (RS)** - Alice's Pod is hosted at `alice.coolpod.example`, giving Alice the webId of `https://alice.coolpod.example/profile/card#me`.
+**Alice's Pod (RS)** - Alice's Pod is hosted at `alice.coolpod.example`, giving Alice the WebID of `https://alice.coolpod.example/profile/card#me`.
 
 **Decent Photos (RP)** - decentphotos is a third party photo viewing web application hosted at `https://www.decentphotos.example`. This web app allows you to view your photos as well as your friend's photos. It will also perform cron jobs on the photos to detect faces. In the OIDC world, this is known as the Relying Party (RP).
 
@@ -30,9 +30,9 @@ Alice has heard of a great new site that allows her to view her friend's photos 
 
 #### 2. Alice clicks the "Connect" button
 
-Before decentphotos can start displaying images, Alice needs to start the process of providing consent. To do so, she must either provide her webId (`https://alice.coolpod.example/profile/card#me`) or the URL of her OP (`https://secureauth.example`) 
+Before decentphotos can start displaying images, Alice needs to start the process of providing consent. To do so, she must either provide her WebID (`https://alice.coolpod.example/profile/card#me`) or the URL of her OP (`https://secureauth.example`) 
 
-While it is not the case with Alice, a user's Pod and OP can be hosted at the same domain. For example, Bob's pod could be `bob.solid.example` with a webId of `https://bob.solid.example/profile/card#me`, but his OP is at `https://solid.example`.
+While it is not the case with Alice, a user's Pod and OP can be hosted at the same domain. For example, Bob's pod could be `bob.solid.example` with a WebID of `https://bob.solid.example/profile/card#me`, but his OP is at `https://solid.example`.
 
 ##### 2.1. Retrieve Profile
 
@@ -163,7 +163,7 @@ OPENID_CONFIGURATION
 
 #### 5. Generates a Private/Public key pair
 
-WebId-OIDC depends on [Proof of Possession (PoP) tokens](README.md#securing-tokens-for-multiple-resource-servers). PoP tokens ensure that third-party web applications can send requests to any number of Pods while ensuring that evil pods can't steal a user's token.
+WebID-OIDC depends on [Proof of Possession (PoP) tokens](README.md#securing-tokens-for-multiple-resource-servers). PoP tokens ensure that third-party web applications can send requests to any number of Pods while ensuring that evil pods can't steal a user's token.
 
 The first step to generating a PoP token is generating a public and private key pair on the third-party RP. In our example, the private key is generated using `RSA256` and looks like:
 
@@ -334,7 +334,7 @@ That URL might look a little complex, but it's essentially a request to `https:/
  - `scope=open_id`: a list of [OIDC scpes](https://auth0.com/docs/scopes/current/oidc-scopes) (attributes of the RS to which this token should have access). `open_id` is a scope that is needed to verify Alice's identity.
  - `client_id=7243fd594bdcf9c71a9b902274afaa30`: indicates the id of the client. The value for this field should be obtained in the registration phase.
  - `response_type=id_token%20token` indicates the desired response data. Note that you cannot use response types that were not previously indicated during registration.
- - `request=eyJhbGciOiJub25lIn0.eyJyZWRpc...`: A JWT containing the public key of the client and signed by the client using the private key. This is unique to WebId-OIDC. We will eventually use this to generate our pop-token.
+ - `request=eyJhbGciOiJub25lIn0.eyJyZWRpc...`: A JWT containing the public key of the client and signed by the client using the private key. This is unique to WebID-OIDC. We will eventually use this to generate our pop-token.
 
  When unencrypted the request looks like
 
