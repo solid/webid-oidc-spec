@@ -21,7 +21,8 @@ as most LDP-based systems. It is based on decentralized OAuth2/OpenID Connect.
     - [Issuer Discovery From Link Header](#issuer-discovery-from-link-header)
     - [Issuer Discovery From WebID Profile](#issuer-discovery-from-webid-profile)
 * [Detailed Sign In Workflow Example](#detailed-sign-in-workflow-example)
-* [Detailed Application Workflow Example](#detailed-application-workflow-example)
+* [Workflow Example for Tokens Representing the App Itself](#detailed-app-centric-workflow)
+* [Workflow Example for Tokens Representing a User via App Itesef](#detailed-user-app-centric-workflow)
 * [Decentralized Authentication Glossary](#decentralized-authentication-glossary)
 
 ## Introduction
@@ -330,11 +331,17 @@ The solution employs [Proof of Possession (PoP) tokens](https://tools.ietf.org/h
 To walk through a more detailed example for WebID-OIDC login, refer to the
 [Example WebID-OIDC Workflow](example-workflow.md) doc.
 
-## Detailed Application Workflow Example
+## Detailed App Centric Workflow
 
 For a detailed example of how an application/agent can access resources in a
 pod on behalf of a given user, refer to the
 [Example Application OIDC Workflow](application-workflow.md).
+
+## Detailed App User Centric Workflow
+
+For a detailed example of how an application/agent can gain a token representing
+the user via the application, refer to the
+[Example Application User OIDC Workflow](application-workflow-detailed.md).
 
 ## Decentralized Authentication Glossary
 
