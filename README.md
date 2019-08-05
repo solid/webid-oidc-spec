@@ -337,7 +337,7 @@ pod on behalf of a given user, refer to the
 
 For a detailed example of how an application/agent can gain a token representing
 the user via the application, refer to the
-[Example Application User OIDC Workflow](application-workflow-detailed.md).
+[Example Application User OIDC Workflow](application-user-workflow.md).
 
 ## Decentralized Authentication Glossary
 
