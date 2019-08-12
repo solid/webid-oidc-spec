@@ -331,7 +331,7 @@ GET https://secureauth.example/authorize?scope=openid&client_id=7243fd594bdcf9c7
 
 That URL might look a little complex, but it's essentially a request to `https://secureauth.example/authorize` with the following URL parameters:
 
- - `scope=openid`: a list of [OIDC scopes](https://auth0.com/docs/scopes/current/oidc-scopes) (attributes of the RS to which this token should have access). `open_id` is a scope that is needed to verify Alice's identity.
+ - `scope=openid`: a list of [OIDC scopes](https://auth0.com/docs/scopes/current/oidc-scopes) (attributes of the RS to which this token should have access). `openid` is a scope that is needed to verify Alice's identity.
  - `client_id=7243fd594bdcf9c71a9b902274afaa30`: indicates the id of the client. The value for this field should be obtained in the registration phase.
  - `response_type=id_token%20token` indicates the desired response data. Note that you cannot use response types that were not previously indicated during registration.
  - `request=eyJhbGciOiJub25lIn0.eyJyZWRpc...`: A JWT containing the public key of the client and signed by the client using the private key. This is unique to WebID-OIDC. We will eventually use this to generate our pop-token.
