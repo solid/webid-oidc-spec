@@ -3,6 +3,10 @@
 
 **Current Spec version:** `v.0.1.0` (see [CHANGELOG.md](CHANGELOG.md))
 
+**Editor** Solid Specification Repository Manager
+
+**Contributors**
+
 WebID-OIDC is an authentication delegation protocol (as well as a toolkit of
 useful auth-related verification techniques) suitable for WebID-based
 decentralized systems such as [Solid](https://github.com/solid/solid), as well
