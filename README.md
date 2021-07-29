@@ -1,6 +1,8 @@
 # WebID-OIDC Authentication Spec
 [![](https://img.shields.io/badge/project-Solid-7C4DFF.svg?style=flat-square)](https://github.com/solid/solid)
 
+**Status:** This specification has been *SUPERSEDED* by [Solid OIDC](https://solid.github.io/solid-oidc/)
+
 **Current Spec version:** `v.0.1.0` (see [CHANGELOG.md](CHANGELOG.md))
 
 WebID-OIDC is an authentication delegation protocol (as well as a toolkit of
